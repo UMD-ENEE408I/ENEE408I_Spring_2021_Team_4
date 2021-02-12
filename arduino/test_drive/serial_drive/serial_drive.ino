@@ -1,13 +1,13 @@
 #include "SingleVNH5019MotorShield.h"
 const int left_ina = 2;
 const int left_en = 3;
-const int left_pwm = A6;
+const int left_pwm = 5;
 const int left_cs = A7;
 const int left_inb = 4;
 
-const int right_ina = 5;
+const int right_ina = 8;
 const int right_en = 6;
-const int right_pwm = A1;
+const int right_pwm = 9;
 const int right_cs = A0;
 const int right_inb = 7;
 
