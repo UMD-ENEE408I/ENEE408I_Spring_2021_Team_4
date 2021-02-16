@@ -43,13 +43,13 @@ void loop()
     switch(inByte){
       case 'w':
         Serial.write("w");
-        left_motor.setM1Speed(50);
-        right_motor.setM1Speed(50);
+        left_motor.setM1Speed(100);
+        right_motor.setM1Speed(100);
         break;
       case 's':
         Serial.write("s");
-        left_motor.setM1Speed(-50);
-        right_motor.setM1Speed(-50);
+        left_motor.setM1Speed(-100);
+        right_motor.setM1Speed(-100);
         break;
       case '\n':
         break;
