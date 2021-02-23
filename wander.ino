@@ -72,7 +72,7 @@ void loop() {
   Serial.print(" right:");
   Serial.println(distR);
 
-  if (distM > 20.0){
+  if (distM > 20.0 && distL > 20.0 && distR > 20.0){
     left_motor.setM1Speed(100);
     right_motor.setM1Speed(100);
   }
