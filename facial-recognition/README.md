@@ -1,6 +1,7 @@
 Adapted from https://www.pyimagesearch.com/2018/09/24/opencv-face-recognition/
 
-#Setup
+# Setup
+
     sudo apt install python3-pip
     python3 -m pip install --upgrade imutils
     python3 -m pip install --upgrade pip
@@ -9,7 +10,7 @@ Adapted from https://www.pyimagesearch.com/2018/09/24/opencv-face-recognition/
     python3 -m pip uninstall numpy
     python3 -m pip install numpy==1.16.4
 
-#Usage
+# Usage
 
 To add a person to the dataset, make a directory in `dataset/` with the name of the person, then populate the directory with at least 10 images of that person.
 
