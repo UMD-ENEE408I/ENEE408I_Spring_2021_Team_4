@@ -4,6 +4,8 @@ import pickle
 from sklearn.preprocessing import LabelEncoder
 import yoga_pose as yoga
 
+import numpy as np # for argmax
+
 ap = argparse.ArgumentParser()
 ap.add_argument("-f", "--features", required=True,
 	help="path to input serialized db of pose features")
@@ -38,10 +40,17 @@ def execute(change):
     yoga.draw_objects(image, counts, objects, peaks)
     sample = [0.0]*len(yoga.BONES)
     yoga.extract_angles(image, counts, objects, peaks, sample)
-    z = clf.predict([sample])
-    predicted_pose = le.classes_[z][0]
-    cv2.putText(image, predicted_pose, (0,20),
-				cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+
+    preds = clf.predict_proba([sample])[0]
+    z = np.argmax(preds)
+    proba = preds[z]
+    predicted_pose = le.classes_[z]
+
+    text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
+
+    if proba >= 0.6 or predicted_pose != "unknown":
+        cv2.putText(image, text, (0,20),
+		    		cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
     cv2.imshow('ouput', image)
     
 print("[INFO] starting video stream...")

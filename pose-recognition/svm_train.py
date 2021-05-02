@@ -29,7 +29,7 @@ height=224
 dim = (width, height)
 
 print("[INFO] training model...")
-clf = svm.SVC(kernel="linear") # classifier
+clf = svm.SVC(kernel="linear", probability=True) # classifier
 clf.fit(features, labels)
 
 # write the actual pose recognition model to disk
