@@ -14,6 +14,12 @@ camSet=f"""nvarguscamerasrc sensor-id=0
 ! videoconvert 
 ! video/x-raw, format=BGR 
 ! appsink"""
+camSet=f"""nvarguscamerasrc sensor-id=0 
+! video/x-raw(memory:NVMM), width=3264, height=2464, framerate=21/1, format=NV12
+! omxh264enc
+! video/x-h264, format=avc,alignment=au
+! h264parse
+! kvssink stream-name=ExampleStream storage-size=128"""
 #camSet="nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=3264, height=2464, framerate=21/1, format=NV12 ! nvvidconv flip-method="+str(flip)+" ! video/x-raw, width="+str(width)+", height="+str(height)+", format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink"
 #camSet='nvarguscamerasrc1' # NVIDIA argus camera source 1
 
