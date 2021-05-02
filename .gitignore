@@ -142,5 +142,4 @@ cython_debug/
 
 #pose estimation items
 pose-recognition/*.pth
-pose-recognition/data
-pose-recognition/output
+pose-recognition/data*
