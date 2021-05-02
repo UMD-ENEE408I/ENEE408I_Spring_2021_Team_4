@@ -40,7 +40,7 @@ imagePaths = list(paths.list_images(args["dataset"]))
 knownFeatures = []
 knownLabels = []
 
-# initialize the total number of faces processed
+# initialize the total number of poses processed
 total = 0
 
 # loop over the image paths
@@ -57,7 +57,7 @@ for (i, imagePath) in enumerate(imagePaths):
     cv2.putText(image, pose, (0,20),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
     if sample != [0.0]*len(yoga.BONES): # if not empty sample
-        if args["manual"] == "True":
+        if args["manual"]:
             cv2.imshow("output", image) # show the output frame
             key = cv2.waitKey(0) & 0xFF
             # if the `q` key was pressed, break from the loop
