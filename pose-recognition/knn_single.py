@@ -6,21 +6,21 @@ from sklearn.neighbors import KNeighborsClassifier
 import yoga_pose as yoga
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-e", "--embeddings", required=True,
-	help="path to serialized db of facial embeddings")
+ap.add_argument("-f", "--features", required=True,
+	help="path to serialized db of sample pose features")
 ap.add_argument("-i", "--image", required=True,
 	help="path to image")
 args = vars(ap.parse_args())
 
 
-# load the pose embeddings
-print("[INFO] loading pose embeddings...")
-data = pickle.loads(open(args["embeddings"], "rb").read())
+# load the pose features
+print("[INFO] loading sample pose features...")
+data = pickle.loads(open(args["features"], "rb").read())
 
 # encode the labels
 print("[INFO] encoding labels...")
 le = LabelEncoder()
-labels = le.fit_transform(data["poses"])
+labels = le.fit_transform(data["labels"])
 
 
 width=224
@@ -28,7 +28,7 @@ height=224
 dim = (width, height)
 
 model = KNeighborsClassifier(n_neighbors=5)
-model.fit(data["embeddings"], labels)
+model.fit(data["features"], labels)
 
 print("[INFO] reading image...")
 img = cv2.imread(args["image"], cv2.IMREAD_UNCHANGED)
@@ -46,8 +46,8 @@ print("[INFO] classifying...")
 z = model.predict([sample])
 predicted_pose = le.classes_[z][0]
 print(predicted_pose)
-cv2.putText(image, predicted_pose, (0,10),
-				cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+cv2.putText(image, predicted_pose, (0,20),
+				cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
 cv2.imshow('output', image)
 cv2.waitKey(0)
 #print("[INFO] freeing resources...")

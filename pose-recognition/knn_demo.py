@@ -17,7 +17,7 @@ data = pickle.loads(open(args["features"], "rb").read())
 # encode the labels
 print("[INFO] encoding labels...")
 le = LabelEncoder()
-labels = le.fit_transform(data["poses"])
+labels = le.fit_transform(data["labels"])
 
 
 width=224
@@ -41,7 +41,7 @@ def execute(change):
     z = model.predict([sample])
     predicted_pose = le.classes_[z][0]
     cv2.putText(image, predicted_pose, (0,20),
-				cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+				cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
     cv2.imshow('ouput', image)
     
 print("[INFO] starting video stream...")
