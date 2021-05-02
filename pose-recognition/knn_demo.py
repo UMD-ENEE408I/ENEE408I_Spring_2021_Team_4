@@ -40,8 +40,9 @@ def execute(change):
     yoga.extract_angles(image, counts, objects, peaks, sample)
     z = model.predict([sample])
     predicted_pose = le.classes_[z][0]
-    cv2.putText(image, predicted_pose, (0,20),
-				cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+    if predicted_pose != "unknown":
+        cv2.putText(image, predicted_pose, (0,20),
+		    		cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
     cv2.imshow('ouput', image)
     
 print("[INFO] starting video stream...")
