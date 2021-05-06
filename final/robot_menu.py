@@ -3,6 +3,7 @@
 
 from flask import Flask
 from flask_ask import Ask, statement, question
+import robot_chat_server
 
 app = Flask(__name__)
 ask = Ask(app, '/')
@@ -14,6 +15,10 @@ def find_person(name):
 @ask.intent('YogaTeacher')
 def yoga_teacher():
     speech_text = 'Starting class'
+    try:
+        robot_chat_server.start_server_func()
+    except:
+        print("starting failed")
     return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.intent('YogaStudent')
 def yoga_student():
