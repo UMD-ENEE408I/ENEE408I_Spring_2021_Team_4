@@ -13,17 +13,24 @@ After installing trt\_pose, move `optimize_model.py`, `benchmark_model.py`, and 
 
 Ensure that your Raspberry Pi camera is in your Xavier NX's CAM0 slot.
 
+Download `resnet18_baseline_att_224x224_A_epoch_249_trt.pth` from [here](https://drive.google.com/open?id=1XYDdCUdiF2xxx4rznmLb62SdOUZuoNbd) and place it in the pose-recognition directory.
+
 # Usage
 
 Create an optimized model for this hardware:
 
-    cd trt_pose/tasks/human_pose
     python3 optimize_model.py
-
-(Optional) Benchmark the model:
-
-    python3 benchmark_model.py
 
 Apply pose recognition to a video stream:
 
     python3 demo.py
+
+# Yoga
+
+To run the SVM classifier on a camera stream:
+
+    python3 svm_demo.py -f output/features.pickle -c output/svm_classifier.pickle -l output/le.pickle
+
+To run the K-nearest neighbor classifier on a camera stream: 
+
+    python3 knn_demo.py -f output/features.pickle

@@ -2,30 +2,32 @@ import cv2
 import argparse
 import pickle
 from sklearn.preprocessing import LabelEncoder
-from sklearn.neighbors import KNeighborsClassifier
 import yoga_pose as yoga
+
+import numpy as np # for argmax
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-f", "--features", required=True,
 	help="path to input serialized db of pose features")
+ap.add_argument("-c", "--classifier", required=True,
+	help="path to model trained to recognize poses")
+ap.add_argument("-l", "--le", required=True,
+	help="path to label encoder")
+
 args = vars(ap.parse_args())
 
 # load the pose features
 print("[INFO] loading pose features...")
 data = pickle.loads(open(args["features"], "rb").read())
 
-# encode the labels
-print("[INFO] encoding labels...")
-le = LabelEncoder()
-labels = le.fit_transform(data["labels"])
+# load the actual face recognition model along with the label encoder
+clf = pickle.loads(open(args["classifier"], "rb").read())
+le = pickle.loads(open(args["le"], "rb").read())
 
 
 width=224
 height=224
 dim = (width, height)
-
-model = KNeighborsClassifier(n_neighbors=3)
-model.fit(data["features"], labels)
 
 
 # main execution loop
@@ -38,10 +40,16 @@ def execute(change):
     yoga.draw_objects(image, counts, objects, peaks)
     sample = [0.0]*len(yoga.BONES)
     yoga.extract_angles(image, counts, objects, peaks, sample)
-    z = model.predict([sample])
-    predicted_pose = le.classes_[z][0]
-    if predicted_pose != "unknown":
-        cv2.putText(image, predicted_pose, (0,20),
+
+    preds = clf.predict_proba([sample])[0]
+    z = np.argmax(preds)
+    proba = preds[z]
+    predicted_pose = le.classes_[z]
+
+    text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
+
+    if proba >= 0.6 or predicted_pose != "unknown":
+        cv2.putText(image, text, (0,20),
 		    		cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
     cv2.imshow('ouput', image)
     

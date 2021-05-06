@@ -139,3 +139,7 @@ cython_debug/
 
 #Key files
 *.key
+
+#pose estimation items
+pose-recognition/*.pth
+pose-recognition/data*
