@@ -9,8 +9,6 @@ Be sure to reinstall numpy version 1.16.4 afterwards:
 Install trt\_pose and dependencies using the instructions from the [trt\_pose repo](https://github.com/NVIDIA-AI-IOT/trt_pose).
 - When installing PyTorch and Torchvision, use the PyTorch **v1.8.0** pip wheel and torchvision **v0.9.0**.
 
-After installing trt\_pose, move `optimize_model.py`, `benchmark_model.py`, and `demo.py` into `trt_pose/tasks/human_pose/`.
-
 Ensure that your Raspberry Pi camera is in your Xavier NX's CAM0 slot.
 
 Download `resnet18_baseline_att_224x224_A_epoch_249_trt.pth` from [here](https://drive.google.com/open?id=1XYDdCUdiF2xxx4rznmLb62SdOUZuoNbd) and place it in the pose-recognition directory.
