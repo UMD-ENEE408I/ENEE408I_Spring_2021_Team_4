@@ -24,10 +24,27 @@ data = pickle.loads(open(args["features"], "rb").read())
 clf = pickle.loads(open(args["classifier"], "rb").read())
 le = pickle.loads(open(args["le"], "rb").read())
 
+# Authentication for YT stream
+yt_key_f=open("youtube.key")
+AUTH=yt_key_f.read().strip()
+print(AUTH)
+rtmpUrl = "rtmp://a.rtmp.youtube.com/live2/x/"+AUTH+" app=live2"
+#rtmpUrl = "rtmp://a.rtmp.youtube.com/live2/x/"+AUTH
+
+print(rtmpUrl)
+#gst_str_rtp = "appsrc ! videoconvert ! 'video/x-raw, width=1280, height=720, framerate=25/1' ! queue ! x264enc bitrate=2000 byte-stream=false key-int-max=60 bframes=0 aud=true tune=zerolatency ! \"video/x-h264,profile=main\" ! flvmux streamable=true name=mux ! rtmpsink location=\""+rtmpUrl+"\"\n audiotestsrc ! volume volume=0 ! level ! voaacenc bitrate=128000 ! mux. "
+#gst_str_rtp = "appsrc ! videoconvert ! x264enc bitrate=2000 byte-stream=false key-int-max=60 bframes=0 aud=true tune=zerolatency ! \"video/x-h264,profile=main\" ! flvmux streamable=true name=mux ! rtmpsink location=\""+rtmpUrl+"\"\n audiotestsrc ! volume volume=0 ! level ! voaacenc bitrate=128000 ! mux. "
+gst_str_rtp = "appsrc ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! flvmux streamable=true name=mux ! rtmpsink location=\""+rtmpUrl+"\" audiotestsrc ! volume volume=0 ! level !voaacenc bitrate=128000 ! mux."
 
 width=224
 height=224
 dim = (width, height)
+fps = 21.
+
+print(gst_str_rtp)
+fps = 21.
+print("[INFO] setting up out...")
+out = cv2.VideoWriter(gst_str_rtp, 0, fps, (width, height), True)
 
 
 # main execution loop
@@ -48,12 +65,11 @@ def execute(change):
 
     text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
 
-
-    image = cv2.resize(image,(448,448),cv2.INTER_AREA)
-    if proba >= 0.7 and predicted_pose != "unknown":
-        cv2.putText(image, text, (10,40),
-		    		cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    if proba >= 0.6 or predicted_pose != "unknown":
+        cv2.putText(image, text, (0,20),
+		    		cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
     cv2.imshow('ouput', image)
+    out.write(image)
     
 print("[INFO] starting video stream...")
 cam=cv2.VideoCapture(yoga.CAMSET)
@@ -66,4 +82,5 @@ while True:
 
 print("[INFO] freeing resources...")
 cam.release() # free the camera
+#out.release()
 cv2.destroyAllWindows()
