@@ -1,7 +1,7 @@
 #include "SingleVNH5019MotorShield.h"
 
-const int lumLeftSpd = -120;
-const int lumRightSpd = 160;
+const int leftSpd = -120;
+const int rightSpd = 160;
 
 const int delay_len = 800; // ms
 
@@ -62,35 +62,35 @@ void stopIfFault() {
 }
 
 void forward() {
-    left_motor.setM1Speed(lumLeftSpd);
-    right_motor.setM1Speed(lumRightSpd);
+    left_motor.setM1Speed(leftSpd);
+    right_motor.setM1Speed(rightSpd);
 }
 
 void backward() {
-    left_motor.setM1Speed(-lumLeftSpd);
-    right_motor.setM1Speed(-lumRightSpd);
+    left_motor.setM1Speed(-leftSpd);
+    right_motor.setM1Speed(-rightSpd);
 }
 
 void left() {
-    left_motor.setM1Speed(-lumLeftSpd);
-    right_motor.setM1Speed(lumRightSpd);
+    left_motor.setM1Speed(-leftSpd);
+    right_motor.setM1Speed(rightSpd);
 }
 
 void right() {
-    left_motor.setM1Speed(lumLeftSpd);
-    right_motor.setM1Speed(-lumRightSpd);
+    left_motor.setM1Speed(leftSpd);
+    right_motor.setM1Speed(-rightSpd);
 }
 
 void leftTurn() {
-    left_motor.setM1Speed(-lumLeftSpd);
-    right_motor.setM1Speed(lumRightSpd);
+    left_motor.setM1Speed(-leftSpd);
+    right_motor.setM1Speed(rightSpd);
     delay(delay_len);
     stopAll();
 }
 
 void rightTurn() {
-    left_motor.setM1Speed(lumLeftSpd);
-    right_motor.setM1Speed(-lumRightSpd);
+    left_motor.setM1Speed(leftSpd);
+    right_motor.setM1Speed(-rightSpd);
     delay(delay_len);
     stopAll();
 }
