@@ -73,7 +73,7 @@ recognizer = pickle.loads(pkg_resources.resource_stream(resource_package, recogn
 le = pickle.loads(pkg_resources.resource_stream(resource_package, le_path).read())
 
 print("[INFO] setting up arduino...")
-#arduino = serial.Serial('/dev/ttyUSB0', 9600, timeout=1) # port, baudrate, timeout
+arduino = serial.Serial('/dev/ttyUSB0', 9600, timeout=1) # port, baudrate, timeout
 turn_time = 0.2 # sec
 stop_time = 1.0
 
@@ -171,22 +171,22 @@ def find_person(target):
 						centered = True
 					elif midX < bound_l:
 						# turn left
-						#arduino.write(b'l')
+						arduino.write(b'l')
 						time.sleep(turn_time)
-						#arduino.write(b's')
+						arduino.write(b's')
 						time.sleep(stop_time)
 					else:
 						# turn right
-						#arduino.write(b'r')
+						arduino.write(b'r')
 						time.sleep(turn_time)
-						#arduino.write(b's')
+						arduino.write(b's')
 						time.sleep(stop_time)
 				
 		# turn if no detection
 		if not detection:
-			#arduino.write(b'l')
+			arduino.write(b'l')
 			time.sleep(turn_time)
-			#arduino.write(b's')
+			arduino.write(b's')
 			time.sleep(stop_time) 
 
 		# show the output frame
