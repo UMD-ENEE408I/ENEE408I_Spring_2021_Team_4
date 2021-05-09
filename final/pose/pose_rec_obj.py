@@ -7,6 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from .yoga_pose import *
 import numpy as np # for argmax
 import threading
+import asyncio
 
 class PoseRecognition:
     def __init__(self, callback):
@@ -49,7 +50,7 @@ class PoseRecognition:
 
         out = cv2.VideoWriter(gst_str_rtp, 0, fps, (out_width, out_height), True)
 
-        thread = threading.Thread(target=self.svm_demo)
+        thread = threading.Thread(target=self.svm_demo, args=[self.event_loop,])
         thread.start()
 
 
@@ -87,7 +88,8 @@ class PoseRecognition:
         
 
 
-    def svm_demo(self):
+    def svm_demo(self,event_loop):
+        asyncio.set_event_loop(event_loop)
         cam=cv2.VideoCapture(CAMSET)
         while True:
             _, frame = cam.read()
