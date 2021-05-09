@@ -11,7 +11,7 @@ Install trt\_pose and dependencies using the instructions from the [trt\_pose re
 
 Ensure that your Raspberry Pi camera is in your Xavier NX's CAM0 slot.
 
-Download `resnet18_baseline_att_224x224_A_epoch_249_trt.pth` from [here](https://drive.google.com/open?id=1XYDdCUdiF2xxx4rznmLb62SdOUZuoNbd) and place it in the `human_pose` directory.
+Download `resnet18_baseline_att_224x224_A_epoch_249_trt.pth` from [here](https://drive.google.com/file/d/1O_ldGB8q0xdokIa1Tb6jh8CXjP3PXSta/view?usp=sharing) and place it in the `human_pose` directory.
 
 Place `youtube.key` in the `pose` directory.
 
