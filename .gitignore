@@ -143,3 +143,5 @@ cython_debug/
 #pose estimation items
 pose-recognition/*.pth
 pose-recognition/data*
+
+facial-recognition/opencv-face-recognition-mod/dataset
