@@ -36,6 +36,9 @@ height=224
 dim = (width, height)
 fps = 21.
 
+out_width = width*2
+out_height = height*2
+
 print(gst_str_rtp)
 fps = 21.
 print("[INFO] setting up out...")
@@ -58,27 +61,26 @@ def execute(change):
     proba = preds[z]
     predicted_pose = le.classes_[z]
 
-    image = cv2.resize(image,(448,448),cv2.INTER_AREA)
+    image = cv2.resize(image,(out_width,out_height),cv2.INTER_AREA)
     text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
     if proba >= 0.7 and predicted_pose != "unknown":
         cv2.putText(image, text, (0,20),
 		    		cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
     cv2.imshow('cam', image)
-    #out.write(image)
-    
+    return image
 
 
 def svm_demo():
-    #out = cv2.VideoWriter(gst_str_rtp, 0, fps, (width, height), True)
+    out = cv2.VideoWriter(gst_str_rtp, 0, fps, (out_width, out_height), True)
     cam=cv2.VideoCapture(CAMSET)
     while True:
         _, frame = cam.read()
-        execute({'new': frame})
-            
+        image = execute({'new': frame})
+        out.write(image)
         if cv2.waitKey(1) == ord('q'):
             break
 
     print("[INFO] freeing resources...")
     cam.release() # free the camera
-    #out.release()
+    out.release()
     cv2.destroyAllWindows()

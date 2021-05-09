@@ -41,10 +41,13 @@ class PoseRecognition(self, callback):
         height=224
         dim = (width, height)
         fps = 21.
+        out_width = width*2
+        out_height = height*2
 
         print(gst_str_rtp)
-        fps = 21.
         print("[INFO] setting up out...")
+
+        out = cv2.VideoWriter(gst_str_rtp, 0, fps, (out_width, out_height), True)
 
         self.thread = threading.Thread(target=self.svm_demo)
 
@@ -79,12 +82,11 @@ class PoseRecognition(self, callback):
             cv2.putText(image, text, (0,20),
                                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.imshow('cam', image)
-        #out.write(image)
+        out.write(image)
         
 
 
     def svm_demo(self):
-        #out = cv2.VideoWriter(gst_str_rtp, 0, fps, (width, height), True)
         cam=cv2.VideoCapture(CAMSET)
         while True:
             _, frame = cam.read()
@@ -95,5 +97,5 @@ class PoseRecognition(self, callback):
 
         print("[INFO] freeing resources...")
         cam.release() # free the camera
-        #out.release()
+        out.release()
         cv2.destroyAllWindows()
