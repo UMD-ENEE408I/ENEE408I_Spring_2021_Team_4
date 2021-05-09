@@ -4,9 +4,13 @@
 from flask import Flask
 from flask_ask import Ask, statement, question
 import robot_chat_server
+import student
+import teacher
 
 app = Flask(__name__)
 ask = Ask(app, '/')
+
+address="" #insert ngrok address for teacher
 
 @ask.intent('Find')
 def find_person(name):
@@ -16,13 +20,15 @@ def find_person(name):
 def yoga_teacher():
     speech_text = 'Starting class'
     try:
-        robot_chat_server.start_server_func()
+        teacher.start_teacher()
     except:
         print("starting failed")
     return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.intent('YogaStudent')
 def yoga_student():
+    global address
     speech_text = 'Connecting to class'
+    student.create_client(address)
     return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.intent('wander')
 def wander():

@@ -14,7 +14,7 @@ def send_message(message):
         'pose':message})
 
 # Run this script directly to invoke this test sequence
-if __name__ == '__main__':
+def start_teacher():
     start_server_func()
     print('Creating RobotChatClient object')
     global client
