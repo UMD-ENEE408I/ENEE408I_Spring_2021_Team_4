@@ -76,7 +76,7 @@ class PoseRecognition(self, callback):
         if(self.count==10):
             callback(predicted_pose)
 
-        image = cv2.resize(image,(448,448),cv2.INTER_AREA)
+        image = cv2.resize(image,(out_width,out_height),cv2.INTER_AREA)
         text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
         if proba >= 0.7 and predicted_pose != "unknown":
             cv2.putText(image, text, (0,20),
