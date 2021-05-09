@@ -21,8 +21,9 @@ def yoga_teacher():
     speech_text = 'Starting class'
     try:
         teacher.start_teacher()
-    except:
+    except Exception as e:
         print("starting failed")
+        print(e)
     return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.intent('YogaStudent')
 def yoga_student():
@@ -30,7 +31,7 @@ def yoga_student():
     speech_text = 'Connecting to class'
     student.create_client(address)
     return statement(speech_text).simple_card('My Robot', speech_text)
-@ask.intent('wander')
+@ask.intent('Wander')
 def wander():
     speech_text = 'Wandering'
     return statement(speech_text).simple_card('My Robot', speech_text)

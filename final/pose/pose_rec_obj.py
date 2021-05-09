@@ -8,7 +8,7 @@ from .yoga_pose import *
 import numpy as np # for argmax
 import threading
 
-class PoseRecognition(self, callback):
+class PoseRecognition:
     def __init__(self, callback):
         self.callback=callback
         self.prev=""
