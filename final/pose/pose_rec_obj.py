@@ -19,6 +19,7 @@ def get_or_create_eventloop():
             return asyncio.get_event_loop()
 class PoseRecognition:
     def __init__(self, callback):
+        print("INIT")
         self.callback=callback
         self.prev=""
 
@@ -58,8 +59,11 @@ class PoseRecognition:
 
         out = cv2.VideoWriter(gst_str_rtp, 0, fps, (out_width, out_height), True)
 
-        self.event_loop=get_or_create_eventloop()
-        thread = threading.Thread(target=self.svm_demo, args=[self.event_loop,])
+        print("GET OR CREATE EVENT LOOP")    
+        #self.event_loop=get_or_create_eventloop()
+        print("AFTER GET OR CREATE EVENT LOOP")    
+        thread = threading.Thread(target=self.svm_demo)
+        thread.daemon=True
         thread.start()
 
 
@@ -97,9 +101,11 @@ class PoseRecognition:
         
 
 
-    def svm_demo(self,event_loop):
+    def svm_demo(self):
         #asyncio.set_event_loop(event_loop)
-        get_or_create_eventloop()
+        print("2 GET OR CREATE EVENT LOOP")    
+        #get_or_create_eventloop()
+        print("2 AFTER GET OR CREATE EVENT LOOP")    
         cam=cv2.VideoCapture(CAMSET)
         while True:
             _, frame = cam.read()

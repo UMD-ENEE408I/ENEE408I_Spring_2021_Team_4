@@ -19,11 +19,7 @@ def find_person(name):
 @ask.intent('YogaTeacher')
 def yoga_teacher():
     speech_text = 'Starting class'
-    try:
-        teacher.start_teacher()
-    except Exception as e:
-        print("starting failed")
-        print(e)
+    teacher.start_teacher()
     return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.intent('YogaStudent')
 def yoga_student():

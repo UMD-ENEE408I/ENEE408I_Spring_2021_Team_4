@@ -1,6 +1,7 @@
 from robot_chat_client import RobotChatClient
 from robot_chat_server import start_server_func
 from pose.pose_rec_obj import PoseRecognition
+import threading
 
 client=""
 def test_callback(message_dict):
@@ -15,7 +16,11 @@ def send_message(message):
 
 # Run this script directly to invoke this test sequence
 def start_teacher():
-    start_server_func()
+    print("START SERVER FUNC")
+    server_thread = threading.Thread(target=start_server_func)
+    server_thread.daemon=True
+    #start_server_func()
+    server_thread.start()
     print('Creating RobotChatClient object')
     global client
     client = RobotChatClient('ws://localhost:5001', callback=test_callback) #ngrok server
