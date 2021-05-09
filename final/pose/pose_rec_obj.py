@@ -49,7 +49,8 @@ class PoseRecognition:
 
         out = cv2.VideoWriter(gst_str_rtp, 0, fps, (out_width, out_height), True)
 
-        self.thread = threading.Thread(target=self.svm_demo)
+        thread = threading.Thread(target=self.svm_demo)
+        thread.start()
 
 
 
