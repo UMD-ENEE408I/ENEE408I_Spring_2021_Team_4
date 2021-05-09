@@ -14,7 +14,6 @@ le_path = '/'.join(('output', 'le.pickle'))
 
 # load the pose features
 print("[INFO] loading pose features...")
-data = pickle.loads(pkg_resources.resource_stream(resource_package, features_path).read())
 
 # load the actual face recognition model along with the label encoder
 clf = pickle.loads(pkg_resources.resource_stream(resource_package, svm_classifier_path).read())
