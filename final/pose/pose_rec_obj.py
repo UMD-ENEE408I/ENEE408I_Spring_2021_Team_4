@@ -9,6 +9,14 @@ import numpy as np # for argmax
 import threading
 import asyncio
 
+def get_or_create_eventloop():
+    try:
+        return asyncio.get_event_loop()
+    except RuntimeError as ex:
+        if "There is no current event loop in thread" in str(ex):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return asyncio.get_event_loop()
 class PoseRecognition:
     def __init__(self, callback):
         self.callback=callback
@@ -89,7 +97,8 @@ class PoseRecognition:
 
 
     def svm_demo(self,event_loop):
-        asyncio.set_event_loop(event_loop)
+        #asyncio.set_event_loop(event_loop)
+	get_or_create_eventloop()
         cam=cv2.VideoCapture(CAMSET)
         while True:
             _, frame = cam.read()
