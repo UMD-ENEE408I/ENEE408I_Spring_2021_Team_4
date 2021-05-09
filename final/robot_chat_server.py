@@ -8,6 +8,15 @@ import websockets
 
 USERS = set()
 
+def get_or_create_eventloop():
+    try:
+        return asyncio.get_event_loop()
+    except RuntimeError as ex:
+        if "There is no current event loop in thread" in str(ex):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return asyncio.get_event_loop()
+
 async def notify_users():
     if USERS:  # asyncio.wait doesn't accept an empty list
         message = json.dumps({"type": "users", "count": len(USERS)})
@@ -40,6 +49,7 @@ async def one_to_all(websocket, path):
 
 
 def start_server_func():
+    get_or_create_eventloop()   
     start_server = websockets.serve(one_to_all, '0.0.0.0', 5001)
 
     asyncio.get_event_loop().run_until_complete(start_server)

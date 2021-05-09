@@ -7,14 +7,23 @@ import threading
 import time
 import queue
 
+def get_or_create_eventloop():
+    try:
+        return asyncio.get_event_loop()
+    except RuntimeError as ex:
+        if "There is no current event loop in thread" in str(ex):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return asyncio.get_event_loop()
+
 # A simple object for communicating with a websocket server
 class RobotChatClient(object):
     def __init__(self, uri, callback):
         self.uri = uri
         self.callback = callback
 
+        self.event_loop = get_or_create_eventloop()
         self.send_message_dict_queue = asyncio.Queue()
-        self.event_loop = asyncio.new_event_loop()
         self.websocket = None
 
         self.thread = threading.Thread(target=self.send_receive_thread,
