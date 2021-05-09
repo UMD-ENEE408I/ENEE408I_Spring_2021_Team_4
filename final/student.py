@@ -1,17 +1,16 @@
 from robot_chat_client import RobotChatClient
+import pyttsx3
+import teacher
 
 
-def test_callback(message_dict):
-   
-    if message_dict['type'] == 'pose':
-        print('Value of field pose: {}'.format(message_dict['pose']))
 
-   
-# Run this script directly to invoke this test sequence
-if __name__ == '__main__':
-    print('Creating RobotChatClient object')
-    client = RobotChatClient('', callback=test_callback) #ngrok server goes in here
+engine = pyttsx3.init()
 
-    
+rate = engine.getProperty('rate')
+engine.setProperty('rate', rate-40)
 
+engine.say('This is a test')
+engine.say('The current yoga pose is...')
+engine.say('The quick brown fox jumped over the lazy dog.')
+engine.runAndWait()
 
