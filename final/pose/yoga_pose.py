@@ -9,6 +9,7 @@ from torch2trt import TRTModule
 from trt_pose.draw_objects import DrawObjects
 from trt_pose.parse_objects import ParseObjects
 from .extract_angles import ExtractAngles
+from .draw_objects import DrawObjects
 
 resource_package = __name__
 HUMAN_POSE_JSON = pkg_resources.resource_filename(resource_package, '/'.join(('human_pose', 'human_pose.json')))

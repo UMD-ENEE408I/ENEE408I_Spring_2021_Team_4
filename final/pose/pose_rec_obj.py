@@ -55,6 +55,8 @@ class PoseRecognition:
         self.out_width = self.width*2
         self.out_height = self.height*2
 
+        self.color = (0, 0, 255) # color for skeleton
+
         print(gst_str_rtp)
         print("[INFO] setting up out...")
 
@@ -76,7 +78,6 @@ class PoseRecognition:
         cmap, paf = model_trt(data)
         cmap, paf = cmap.detach().cpu(), paf.detach().cpu()
         counts, objects, peaks = parse_objects(cmap, paf) #, cmap_threshold=0.15, link_threshold=0.15)
-        draw_objects(image, counts, objects, peaks)
         sample = [0.0]*len(BONES)
         extract_angles(image, counts, objects, peaks, sample)
 
@@ -87,11 +88,14 @@ class PoseRecognition:
         if(self.prev!=predicted_pose):
             self.count=0
             self.prev=predicted_pose
+            self.color = (0,0,255)
         if(predicted_pose!="unknown"):
             self.count+=1
         if(self.count==10):
+            self.color = (0,255,0)
             callback(predicted_pose)
 
+        draw_objects(image, counts, objects, peaks, color)
         image = cv2.resize(image,(self.out_width,self.out_height),cv2.INTER_AREA)
         text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
         if proba >= 0.7 and predicted_pose != "unknown":

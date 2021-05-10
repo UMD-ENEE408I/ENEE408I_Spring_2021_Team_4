@@ -6,6 +6,7 @@ import pkg_resources
 from sklearn.preprocessing import LabelEncoder
 from .yoga_pose import *
 import numpy as np # for argmax
+from collections import deque
 
 resource_package = __name__
 features_path = '/'.join(('output', 'features.pickle'))
@@ -43,16 +44,23 @@ print(gst_str_rtp)
 fps = 21.
 print("[INFO] setting up out...")
 
-
+queue_len = 50
+prev_thresh = int(queue_len*0.8)
+color = (0, 0, 255) # red
+history = deque(maxlen=queue_len)
+prev = -1
 
 # main execution loop
 def execute(change):
+    global color
+    global history
+    global prev
+
     image = change['new']
     data = preprocess(image)
     cmap, paf = model_trt(data)
     cmap, paf = cmap.detach().cpu(), paf.detach().cpu()
     counts, objects, peaks = parse_objects(cmap, paf) #, cmap_threshold=0.15, link_threshold=0.15)
-    draw_objects(image, counts, objects, peaks)
     sample = [0.0]*len(BONES)
     extract_angles(image, counts, objects, peaks, sample)
 
@@ -61,25 +69,38 @@ def execute(change):
     proba = preds[z]
     predicted_pose = le.classes_[z]
 
+    history.append(z)
+    prev_count = history.count(prev)
+    if prev_count < prev_thresh: # reset
+        prev=-1
+        color = (0,0,255)
+
+    draw_objects(image, counts, objects, peaks, color)
     image = cv2.resize(image,(out_width,out_height),cv2.INTER_AREA)
     text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
     if proba >= 0.7 and predicted_pose != "unknown":
-        cv2.putText(image, text, (0,20),
+        if prev != z and prev_count < prev_thresh:
+            prev = z # set new prev
+        elif prev == z and prev_count >=prev_thresh:
+            color = (0,255,0)
+        cv2.putText(image, text, (20,30),
 		    		cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
     cv2.imshow('cam', image)
     return image
 
 
 def svm_demo():
-    out = cv2.VideoWriter(gst_str_rtp, 0, fps, (out_width, out_height), True)
-    cam=cv2.VideoCapture(CAMSET)
-    while True:
-        _, frame = cam.read()
-        image = execute({'new': frame})
-        out.write(image)
-        if cv2.waitKey(1) == ord('q'):
-            break
-
+    try:
+        out = cv2.VideoWriter(gst_str_rtp, 0, fps, (out_width, out_height), True)
+        cam=cv2.VideoCapture(CAMSET)
+        while True:
+            _, frame = cam.read()
+            image = execute({'new': frame})
+            out.write(image)
+            if cv2.waitKey(1) == ord('q'):
+                break
+    except Exception as e:
+        print(e)
     print("[INFO] freeing resources...")
     cam.release() # free the camera
     out.release()
