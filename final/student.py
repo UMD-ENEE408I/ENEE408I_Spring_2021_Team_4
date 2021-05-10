@@ -25,4 +25,6 @@ def test_callback(message_dict):
 
 def create_client(address):
     client=RobotChatClient(address, callback=test_callback)
+    while True:
+        pass
 

@@ -30,13 +30,13 @@ def yoga_teacher():
     #thread.daemon=True
     #thread.start()  
     teacher.start_teacher()
-    return statement(speech_text).simple_card('My Robot', speech_text)
+    #return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.intent('YogaStudent')
 def yoga_student():
     global address
     speech_text = 'Connecting to class'
     student.create_client(address)
-    return statement(speech_text).simple_card('My Robot', speech_text)
+    #return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.intent('Wander')
 def wander():
     speech_text = 'Wandering'
