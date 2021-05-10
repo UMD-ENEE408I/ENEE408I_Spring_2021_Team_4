@@ -144,4 +144,8 @@ cython_debug/
 pose-recognition/*.pth
 pose-recognition/data*
 
+# face dataset
 facial-recognition/opencv-face-recognition-mod/dataset
+
+# pose .pth files
+*.pth
