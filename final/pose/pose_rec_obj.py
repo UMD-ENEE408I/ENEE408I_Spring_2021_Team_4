@@ -8,6 +8,7 @@ from .yoga_pose import *
 import numpy as np # for argmax
 import threading
 import asyncio
+from .robot_chat_client import RobotChatClient
 
 def get_or_create_eventloop():
     try:
@@ -18,10 +19,13 @@ def get_or_create_eventloop():
             asyncio.set_event_loop(loop)
             return asyncio.get_event_loop()
 
+def test_callback(message_dict):
+    if message_dict['type'] == 'pose':
+        print('Value of field pose: {}'.format(message_dict['pose']))
+
 class PoseRecognition:
-    def __init__(self, callback):
+    def __init__(self):
         print("INIT")
-        self.callback=callback
         self.prev=""
 
         resource_package = __name__
@@ -48,6 +52,8 @@ class PoseRecognition:
         #gst_str_rtp = "appsrc ! videoconvert ! x264enc bitrate=2000 byte-stream=false key-int-max=60 bframes=0 aud=true tune=zerolatency ! \"video/x-h264,profile=main\" ! flvmux streamable=true name=mux ! rtmpsink location=\""+rtmpUrl+"\"\n audiotestsrc ! volume volume=0 ! level ! voaacenc bitrate=128000 ! mux. "
         gst_str_rtp = "appsrc ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! flvmux streamable=true name=mux ! rtmpsink location=\""+rtmpUrl+"\" audiotestsrc ! volume volume=0 ! level !voaacenc bitrate=128000 ! mux."
 
+        self.client = RobotChatClient('ws://localhost:5001', callback=test_callback)
+
         self.width=224
         self.height=224
         self.dim = (self.width, self.height)
@@ -70,6 +76,9 @@ class PoseRecognition:
         thread.start()
         thread.join()
 
+    def send_message(self, message):
+        self.client.send({'type':'pose',
+        'pose':message})
 
     # main execution loop
     def execute(self, change):
@@ -93,9 +102,10 @@ class PoseRecognition:
             self.count+=1
         if(self.count==10):
             self.color = (0,255,0)
-            callback(predicted_pose)
+            self.send_message(predicted_pose)
+            #callback(predicted_pose)
 
-        draw_objects(image, counts, objects, peaks, color)
+        draw_objects(image, counts, objects, peaks, self.color)
         image = cv2.resize(image,(self.out_width,self.out_height),cv2.INTER_AREA)
         text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
         if proba >= 0.7 and predicted_pose != "unknown":
