@@ -18,14 +18,15 @@ def send_message(message):
 def start_teacher():
     print("START SERVER FUNC")
     server_thread = threading.Thread(target=start_server_func)
-    server_thread.daemon=True
+    #server_thread.daemon=True
     #start_server_func()
     server_thread.start()
     print('Creating RobotChatClient object')
     global client
     client = RobotChatClient('ws://localhost:5001', callback=test_callback) #ngrok server
     pr=PoseRecognition(callback=send_message)
-
+    while True:
+            pass
 
     
 

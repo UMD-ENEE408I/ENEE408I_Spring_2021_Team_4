@@ -6,6 +6,9 @@ from flask_ask import Ask, statement, question
 import robot_chat_server
 import student
 import teacher
+import threading
+import face
+import serial
 
 app = Flask(__name__)
 ask = Ask(app, '/')
@@ -15,10 +18,17 @@ address="" #insert ngrok address for teacher
 @ask.intent('Find')
 def find_person(name):
     speech_text = 'Locating '+name
+    
+    print("FINDING "+name)
+    face.find_person(name.lower())
+    
     return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.intent('YogaTeacher')
 def yoga_teacher():
     speech_text = 'Starting class'
+    #thread = threading.Thread(target=teacher.start_teacher())
+    #thread.daemon=True
+    #thread.start()  
     teacher.start_teacher()
     return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.intent('YogaStudent')
@@ -30,6 +40,9 @@ def yoga_student():
 @ask.intent('Wander')
 def wander():
     speech_text = 'Wandering'
+    arduino.write(b'w')
+    time.sleep(15.0)
+    arduino.write(b's')
     return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.launch
 def start_skill():

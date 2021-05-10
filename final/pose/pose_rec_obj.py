@@ -17,6 +17,7 @@ def get_or_create_eventloop():
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             return asyncio.get_event_loop()
+
 class PoseRecognition:
     def __init__(self, callback):
         print("INIT")
@@ -32,8 +33,8 @@ class PoseRecognition:
         print("[INFO] loading pose features...")
 
         # load the actual face recognition model along with the label encoder
-        clf = pickle.loads(pkg_resources.resource_stream(resource_package, svm_classifier_path).read())
-        le = pickle.loads(pkg_resources.resource_stream(resource_package, le_path).read())
+        self.clf = pickle.loads(pkg_resources.resource_stream(resource_package, svm_classifier_path).read())
+        self.le = pickle.loads(pkg_resources.resource_stream(resource_package, le_path).read())
 
         # Authentication for YT stream
         yt_key_f=pkg_resources.resource_string(resource_package, "youtube.key").decode("utf-8")
@@ -47,25 +48,25 @@ class PoseRecognition:
         #gst_str_rtp = "appsrc ! videoconvert ! x264enc bitrate=2000 byte-stream=false key-int-max=60 bframes=0 aud=true tune=zerolatency ! \"video/x-h264,profile=main\" ! flvmux streamable=true name=mux ! rtmpsink location=\""+rtmpUrl+"\"\n audiotestsrc ! volume volume=0 ! level ! voaacenc bitrate=128000 ! mux. "
         gst_str_rtp = "appsrc ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! flvmux streamable=true name=mux ! rtmpsink location=\""+rtmpUrl+"\" audiotestsrc ! volume volume=0 ! level !voaacenc bitrate=128000 ! mux."
 
-        width=224
-        height=224
-        dim = (width, height)
-        fps = 21.
-        out_width = width*2
-        out_height = height*2
+        self.width=224
+        self.height=224
+        self.dim = (self.width, self.height)
+        self.fps = 21.
+        self.out_width = self.width*2
+        self.out_height = self.height*2
 
         print(gst_str_rtp)
         print("[INFO] setting up out...")
 
-        out = cv2.VideoWriter(gst_str_rtp, 0, fps, (out_width, out_height), True)
+        self.out = cv2.VideoWriter(gst_str_rtp, 0, self.fps, (self.out_width, self.out_height), True)
 
         print("GET OR CREATE EVENT LOOP")    
         #self.event_loop=get_or_create_eventloop()
         print("AFTER GET OR CREATE EVENT LOOP")    
         thread = threading.Thread(target=self.svm_demo)
-        thread.daemon=True
+        #thread.daemon=True
         thread.start()
-
+        thread.join()
 
 
     # main execution loop
@@ -79,10 +80,10 @@ class PoseRecognition:
         sample = [0.0]*len(BONES)
         extract_angles(image, counts, objects, peaks, sample)
 
-        preds = clf.predict_proba([sample])[0]
+        preds = self.clf.predict_proba([sample])[0]
         z = np.argmax(preds)
         proba = preds[z]
-        predicted_pose = le.classes_[z]
+        predicted_pose = self.le.classes_[z]
         if(self.prev!=predicted_pose):
             self.count=0
             self.prev=predicted_pose
@@ -91,30 +92,32 @@ class PoseRecognition:
         if(self.count==10):
             callback(predicted_pose)
 
-        image = cv2.resize(image,(out_width,out_height),cv2.INTER_AREA)
+        image = cv2.resize(image,(self.out_width,self.out_height),cv2.INTER_AREA)
         text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
         if proba >= 0.7 and predicted_pose != "unknown":
             cv2.putText(image, text, (0,20),
                                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.imshow('cam', image)
-        out.write(image)
+        self.out.write(image)
         
 
 
     def svm_demo(self):
         #asyncio.set_event_loop(event_loop)
-        print("2 GET OR CREATE EVENT LOOP")    
-        #get_or_create_eventloop()
-        print("2 AFTER GET OR CREATE EVENT LOOP")    
+           
         cam=cv2.VideoCapture(CAMSET)
-        while True:
-            _, frame = cam.read()
-            self.execute({'new': frame})
-                
-            if cv2.waitKey(1) == ord('q'):
-                break
-
+        print("VideoCapture ready")
+        try:
+            while True:
+                print("test")
+                _, frame = cam.read()
+                self.execute({'new': frame})
+                    
+                if cv2.waitKey(1) == ord('q'):
+                    break
+        except Exception as e:
+            print(e)
         print("[INFO] freeing resources...")
         cam.release() # free the camera
-        out.release()
+        self.out.release()
         cv2.destroyAllWindows()
