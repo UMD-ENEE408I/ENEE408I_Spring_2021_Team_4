@@ -8,6 +8,7 @@ from .yoga_pose import *
 import numpy as np # for argmax
 import threading
 import asyncio
+from collections import deque
 from .robot_chat_client import RobotChatClient
 
 def get_or_create_eventloop():
@@ -25,8 +26,7 @@ def test_callback(message_dict):
 
 class PoseRecognition:
     def __init__(self):
-        print("INIT")
-        self.prev=""
+        #print("INIT")
 
         resource_package = __name__
         features_path = '/'.join(('output', 'features.pickle'))
@@ -57,20 +57,23 @@ class PoseRecognition:
         self.width=224
         self.height=224
         self.dim = (self.width, self.height)
-        self.fps = 21.
         self.out_width = self.width*2
         self.out_height = self.height*2
 
+        queue_len = 50
+        self.prev_thresh = int(queue_len*0.8)
         self.color = (0, 0, 255) # color for skeleton
+        self.history = deque(maxlen=queue_len)
+        self.prev = -1 # last identified pose index
 
         print(gst_str_rtp)
         print("[INFO] setting up out...")
 
-        self.out = cv2.VideoWriter(gst_str_rtp, 0, self.fps, (self.out_width, self.out_height), True)
+        self.out = cv2.VideoWriter(gst_str_rtp, 0, 21.0, (self.out_width, self.out_height), True)
 
-        print("GET OR CREATE EVENT LOOP")    
+        #print("GET OR CREATE EVENT LOOP")    
         #self.event_loop=get_or_create_eventloop()
-        print("AFTER GET OR CREATE EVENT LOOP")    
+        #print("AFTER GET OR CREATE EVENT LOOP")    
         thread = threading.Thread(target=self.svm_demo)
         #thread.daemon=True
         thread.start()
@@ -94,22 +97,23 @@ class PoseRecognition:
         z = np.argmax(preds)
         proba = preds[z]
         predicted_pose = self.le.classes_[z]
-        if(self.prev!=predicted_pose):
-            self.count=0
-            self.prev=predicted_pose
+        
+        self.history.append(z)
+        self.prev_count = self.history.count(self.prev)
+        if self.prev_count < self.prev_thresh: # reset
+            self.prev=-1
             self.color = (0,0,255)
-        if(predicted_pose!="unknown"):
-            self.count+=1
-        if(self.count==10):
-            self.color = (0,255,0)
-            self.send_message(predicted_pose)
-            #callback(predicted_pose)
 
         draw_objects(image, counts, objects, peaks, self.color)
         image = cv2.resize(image,(self.out_width,self.out_height),cv2.INTER_AREA)
         text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
         if proba >= 0.7 and predicted_pose != "unknown":
-            cv2.putText(image, text, (0,20),
+            if self.prev != z and self.prev_count < self.prev_thresh:
+                self.prev = z # set new prev
+            elif self.prev == z and self.prev_count >= self.prev_thresh:
+                self.color = (0,255,0)
+                self.send_message(predicted_pose)
+            cv2.putText(image, text, (20,30),
                                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.imshow('cam', image)
         self.out.write(image)
@@ -120,10 +124,8 @@ class PoseRecognition:
         #asyncio.set_event_loop(event_loop)
            
         cam=cv2.VideoCapture(CAMSET)
-        print("VideoCapture ready")
         try:
             while True:
-                print("test")
                 _, frame = cam.read()
                 self.execute({'new': frame})
                     
