@@ -13,7 +13,9 @@ import serial
 app = Flask(__name__)
 ask = Ask(app, '/')
 
-address="ws://972efb9b711b.ngrok.io" #insert ngrok address for teacher
+arduino = serial.Serial('/dev/ttyUSB0', 9600, timeout=1) # port, baudrate, timeout
+
+address="ws://6470570442c4.ngrok.io" #insert ngrok address for teacher
 print("[INFO] Ready.")
 @ask.intent('Find')
 def find_person(name):
