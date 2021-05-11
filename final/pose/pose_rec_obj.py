@@ -109,7 +109,7 @@ class PoseRecognition:
         draw_objects(image, counts, objects, peaks, self.color)
         image = cv2.resize(image,(self.out_width,self.out_height),cv2.INTER_AREA)
         text = "{:.2f}%: {}".format(proba * 100, predicted_pose)
-        if proba >= 0.7 and predicted_pose != "unknown":
+        if proba >= 0.6 and predicted_pose != "unknown":
             if self.prev != z and self.prev_count < self.prev_thresh:
                 self.prev = z # set new prev
                 self.sent = False
