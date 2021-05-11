@@ -65,6 +65,7 @@ class PoseRecognition:
         self.color = (0, 0, 255) # color for skeleton
         self.history = deque(maxlen=queue_len)
         self.prev = -1 # last identified pose index
+        self.sent = False # whether identified pose has already been sent
 
         print(gst_str_rtp)
         print("[INFO] setting up out...")
@@ -103,6 +104,7 @@ class PoseRecognition:
         if self.prev_count < self.prev_thresh: # reset
             self.prev=-1
             self.color = (0,0,255)
+            self.sent = False
 
         draw_objects(image, counts, objects, peaks, self.color)
         image = cv2.resize(image,(self.out_width,self.out_height),cv2.INTER_AREA)
@@ -110,10 +112,12 @@ class PoseRecognition:
         if proba >= 0.7 and predicted_pose != "unknown":
             if self.prev != z and self.prev_count < self.prev_thresh:
                 self.prev = z # set new prev
-            elif self.prev == z and self.prev_count >= self.prev_thresh:
+                self.sent = False
+            elif self.prev == z and self.prev_count >= self.prev_thresh and not self.sent:
                 self.color = (0,255,0)
                 print("[INFO] Pose detected: "+ predicted_pose)
                 self.send_message(predicted_pose)
+                self.sent = True
             cv2.putText(image, text, (20,30),
                                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.imshow('cam', image)
