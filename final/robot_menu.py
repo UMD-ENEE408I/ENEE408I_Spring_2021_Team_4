@@ -15,7 +15,7 @@ ask = Ask(app, '/')
 
 arduino = serial.Serial('/dev/ttyUSB0', 9600, timeout=1) # port, baudrate, timeout
 
-address="ws://6470570442c4.ngrok.io" #insert ngrok address for teacher
+address="ws://NGROKURL.ngrok.io" #insert ngrok address for teacher
 print("[INFO] Ready.")
 @ask.intent('Find')
 def find_person(name):
@@ -44,7 +44,7 @@ def yoga_student():
 def wander():
     speech_text = 'Wandering'
     print("[INTENT] Wandering")
-    #arduino.write(b'w')
+    arduino.write(b'w')
     #time.sleep(15.0)
     #arduino.write(b's')
     return statement(speech_text).simple_card('My Robot', speech_text)
@@ -52,7 +52,7 @@ def wander():
 def stop_wander():
     speech_text = 'Stopping wander'
     print("[INTENT] Stopping wander")
-    #arduino.write(b's')
+    arduino.write(b's')
     return statement(speech_text).simple_card('My Robot', speech_text)
 @ask.launch
 def start_skill():
