@@ -112,6 +112,7 @@ class PoseRecognition:
                 self.prev = z # set new prev
             elif self.prev == z and self.prev_count >= self.prev_thresh:
                 self.color = (0,255,0)
+                print("[INFO] Pose detected: "+ predicted_pose)
                 self.send_message(predicted_pose)
             cv2.putText(image, text, (20,30),
                                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
